@@ -1,0 +1,7 @@
+a = int(input("Entre le premier nombre: "))
+b = int(input("Entre le deuxieme nombre: "))
+print("La somme est:", a + b)
+print("La differene est:", a - b)
+print("Le produit est:", a*b)
+print("Le quotient est:", a/b)
+print("le reste de la division est:", a % b)
