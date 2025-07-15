@@ -1,7 +1,7 @@
 nom = "Abone"
 age = 17
 language = "anglais"
-objectif = "cybersécurité"
+objectif = "cybersÃ©curitÃ©"
 
 print("Nom :", nom)
 print("Age :", age)
