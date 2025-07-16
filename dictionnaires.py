@@ -13,12 +13,11 @@ if nom in dico:
     print("Vous avez:" + str(dico[nom]) + " ans.")
 else:
     print("Vous n'etes pas enregistré.")
-
-    produits = {
+produits = {
         "Phone": 40000,
         "Desktop": 200000,
         "Key": 3000,
         "Microphone": 15000
-    }
-    for p in produits:
-        print("A", p, "costs:", produits[p], "FCFA" )
+         }
+for p in produits:
+    print("A", p, "costs:", produits[p], "FCFA" )
