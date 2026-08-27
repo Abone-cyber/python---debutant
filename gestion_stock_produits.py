@@ -8,7 +8,7 @@ def ajouter_produit():
         return
     try:
         quantite = int(input("Quantité : "))
-        prix = int(input("Prix : "))
+        prix = float(input("Prix : "))
         stock[nom] = {"quantité": quantite, "prix": prix}
         print(f"{nom} ajouté avec succès.")
     except ValueError:
@@ -19,12 +19,12 @@ def afficher_stock():
         print("Le stock est vide.")
     else:
         print("\n--- Stock actuel ---")
-    for nom, infos in stock.items():
-        print(f"Produit : {nom} | Quantité : {infos["quantité"]} | Prix : {infos["prix"]} FCFA")
-        print("-" * 50)
+        for nom, infos in stock.items():
+            print(f"Produit : {nom} | Quantité : {infos["quantité"]} | Prix : {infos["prix"]} FCFA")
+            print("-" * 50)
 
 def rechercher_produit():
-    print("\nVous rechercher un produit.")
+    print("\nRecherche d'un produit.")
     nom = input("Nom du produit : ").lower()
     if nom in stock:
         infos = stock[nom]
