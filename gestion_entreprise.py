@@ -73,6 +73,14 @@ dev = Developpeur("Alice", 400000, "Python", pc)
 enterp = Entreprise("CyberTech")
 enterp.ajouter_employe(dev)
 
+#Test de recherche d'un employé
+employe = enterp.rechercher_employe("Alice")
+if employe:
+    print(employe.afficher_infos())
+else:
+    print("Employé introuvable.")
+
+#Test de suppression d'un employé
 if enterp.supprimer_employe("Alice"):
     print("Employé supprimé.")
 else:
