@@ -1,0 +1,22 @@
+----------------------------------------------------pathlib------------------------------------------------------
+#if element.is_file() and element.suffix == ".py":
+# dossier.glob("*type")
+#  .suffix  .name
+#   rglob:   pour chercher aussi dans les sous-dossiers. ---> r vient de récursive.
+# .rglob("*") ---> Affiche tout les dosssiers et les fichiers qui se trouvent
+#  dans le réprertoire courant ----> "*" : tout les fichiers ands excxeptioins
+
+------------------------------------------------datetime----------------------------------------------------------
+#    print(f"Dernière modification : {datetime.fromtimestamp(fichier.stat().st_mtime)}")
+
+---------------------------------------------------hashlib------------------------------------------------------
+
+import hashlib
+texte = "Bonjour Patrice !"
+empreinte = hashlib.sha256(texte.encode()).hexdigest()
+print(empreinte)
+
+1 bit       = 0 ou 1
+4 bits      = 1 chiffre hexadécimal
+8 bits      = 2 chiffres hexadécimaux = 1 octet
+256 bits    = 64 chiffres hexadécimaux = 32 octets
