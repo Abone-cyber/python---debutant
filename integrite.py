@@ -18,30 +18,36 @@ if fichier_empreinte.exists():
     with fichier_empreinte.open("r", encoding="utf-8") as f_e:
         ancienne_empreinte = json.load(f_e)
         if not ancienne_empreinte:
-            print ("Première utilisation ! empreinte.json est vide.")
+            print("Première utilisation ! empreinte.json est vide.")
 else:
     ancienne_empreinte = {}
     print("Première utilisation ! empreinte.json est vide.")
 
 def verifier_integrite(ancienne_empreinte, empreinte):
+    ok = 0
+    modifies = 0
+    nouveaux = 0
+    supprimes = 0
 
     for nom in ancienne_empreinte:
         if nom in empreinte:
             if ancienne_empreinte[nom] == empreinte[nom]:
                 print("Le fichier est OK.")
+                ok += 1
             else:
                 print(f"ALERTE : {nom} a été modifié !")
-             
+                modifies += 1
     for nom in empreinte:
         if nom not in ancienne_empreinte:
             print("Nouveau fichier:", nom)
+            nouveaux += 1
                 
     for nom in ancienne_empreinte:
         if nom not in empreinte:
             print(f"{nom} a été supprimé.")
-            
+            supprimes += 1
+    return f"===== RÉSUMÉ =====\n Fichiers OK : {ok}\n Fichiers modifiés: {modifies}\n Nouveaux fichiers: {nouveaux}\n Fichiers supprimés: {supprimes}"
 
-        
 
 def construire_empreinte(dossier, fichier_empreinte):
     empreinte = {}
@@ -53,7 +59,10 @@ def construire_empreinte(dossier, fichier_empreinte):
                 continue
 
             hash_fichier = calculer_hash(fichier)
-            empreinte[fichier.name] = hash_fichier
+#Au cas où il y a le meme nom de fichier dans les sous_dossiers de dosssier, on utilise le CHEMIN RELATIF.
+# .as_posix() transforme l'objet path en clé lisible par json.
+            cle = fichier.relative_to(dossier).as_posix()
+            empreinte[cle] = hash_fichier
 
     return empreinte
 
@@ -61,8 +70,7 @@ def sauvegarder_empreinte(empreinte):
         with fichier_empreinte.open("w", encoding="utf-8") as f_e:
             json.dump(empreinte, f_e, sort_keys= True, indent=4)
 
-if not ancienne_empreinte:
-    sauvegarder_empreinte(empreinte)
+
 
 
 def mettre_a_jour_empreinte(empreinte):
