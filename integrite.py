@@ -15,13 +15,15 @@ def calculer_hash(fichier):
 
 
 if fichier_empreinte.exists():
-    with fichier_empreinte.open("r", encoding="utf-8") as f_e:
-        ancienne_empreinte = json.load(f_e)
-        if not ancienne_empreinte:
-            print("Première utilisation ! empreinte.json est vide.")
+    try:
+        with fichier_empreinte.open("r", encoding="utf-8") as f_e:
+            ancienne_empreinte = json.load(f_e)
+    except json.JSONDecodeError:
+            print("ALERTE : le fichier d'empreintes est invalide.")
+            ancienne_empreinte = {}
 else:
     ancienne_empreinte = {}
-    print("Première utilisation ! empreinte.json est vide.")
+    print("Première utilisation ! Aucun fichier d'empreintes trouvé.")
 
 def verifier_integrite(ancienne_empreinte, empreinte):
     ok = 0
@@ -37,6 +39,8 @@ def verifier_integrite(ancienne_empreinte, empreinte):
             else:
                 print(f"ALERTE : {nom} a été modifié !")
                 modifies += 1
+                print("Ancienne empreinte : ", ancienne_empreinte[nom])
+                print("Nouvelle empreinte : ", empreinte[nom])
     for nom in empreinte:
         if nom not in ancienne_empreinte:
             print("Nouveau fichier:", nom)
@@ -75,6 +79,32 @@ def sauvegarder_empreinte(empreinte):
 
 def mettre_a_jour_empreinte(empreinte):
     sauvegarder_empreinte(empreinte)
+
+
+empreinte = construire_empreinte(dossier, fichier_empreinte)
+sauvegarder_empreinte(empreinte)
+verifier_integrite(ancienne_empreinte, empreinte)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
