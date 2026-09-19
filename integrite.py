@@ -3,7 +3,6 @@ import hashlib
 import json
 dossier = Path(__file__).parent
 
-
 fichier_empreinte = dossier / "empreintes.json"
 
 
@@ -12,10 +11,11 @@ def calculer_hash(fichier):
     hash_obj = hashlib.sha256(contenu)
     return hash_obj.hexdigest()
     
+
 def verifier_integrite(ancienne_empreinte, empreinte):
 
     resultats = {"ok": [],
-                 "modifies": [],
+                 "modifies": [],                                 
                  "nouveaux": [],
                  "supprimes": []
                  }
@@ -50,7 +50,7 @@ def construire_empreinte(dossier, fichier_empreinte):
                 continue
 
             hash_fichier = calculer_hash(fichier)
-#Au cas où il y a le meme nom de fichier dans les sous_dossiers de dosssier, on utilise le CHEMIN RELATIF.
+#Au cas où il y a le meme nom de fichier, on utilise le CHEMIN RELATIF.
 # .as_posix() transforme l'objet path en clé lisible par json.
             cle = fichier.relative_to(dossier).as_posix()
             empreinte[cle] = hash_fichier
@@ -59,7 +59,7 @@ def construire_empreinte(dossier, fichier_empreinte):
 
 def sauvegarder_empreinte(empreinte):
     with fichier_empreinte.open("w", encoding="utf-8") as f_e:
-        json.dump(empreinte, f_e, sort_keys= True, indent=4)
+        json.dump(empreinte, f_e, sort_keys=True, indent=4)
 
 
 def mettre_a_jour_empreinte(empreinte):
@@ -92,11 +92,16 @@ def afficher_rapport(resultats):
     print("Fichiers supprimés:", len(resultats["supprimes"]))
     print("Nouveaux fichiers:", len(resultats["nouveaux"]))
 
-        
+def afficher_menu():
+    print("="*15, "MENU", "="*15)
+    print("1. Vérifier l'intégrité")      
+    print("2. Mettre à jour la référence")
+    print("3. Quitter")
 
-def main():
-    empreinte = construire_empreinte(dossier, fichier_empreinte)
+    choix = input("Votre choix : ")
+    return choix
 
+def charger_empreinte():
     empreinte_valide = True
     if fichier_empreinte.exists():
         try:
@@ -109,6 +114,41 @@ def main():
     else:
         print("Première utilisation ! Aucun fichier d'empreintes trouvé.")
         ancienne_empreinte = {}
+    return ancienne_empreinte, empreinte_valide
+
+def confirmer_mise_a_jour():
+    print("\nVous êtes sur le point de remplacer la référence actuelle.")
+    print("Cette action acceptera l'état actuel des fichiers comme nouvelle référence.")
+
+    choix = input("\nConfirmer ? (o/n) :").strip().lower()
+
+    return choix == "o"
+
+def main():
+    while True:
+        choix = afficher_menu()
+        if choix == "1":
+            print("\nVérification...")    
+            ancienne_empreinte, empreinte_valide = charger_empreinte()
+            if empreinte_valide:
+                empreinte = construire_empreinte(dossier, fichier_empreinte)
+                resultats = verifier_integrite(ancienne_empreinte, empreinte)
+                afficher_rapport(resultats)
+            else:
+                print("Alerte: Le fichier d'empreinte est corrompu ou invalide.")
+        elif choix == "2":
+            empreinte = construire_empreinte(dossier, fichier_empreinte)
+            confirmation = confirmer_mise_a_jour()
+            if confirmation:
+                mettre_a_jour_empreinte(empreinte)
+                print("Référence mise à jour avec succès.")
+            else:
+                print("OK ! Aucune modification.")
+# Est ce qu'on aurait pu écrire if confirmer_mise_a_jour() ? au mieu de d'abord stocker le résultat ?
+        elif choix == "3":
+            print("Au-revoir.")
+            break
+
 
     if empreinte_valide:
         if not ancienne_empreinte:
