@@ -102,19 +102,26 @@ def afficher_menu():
     return choix
 
 def charger_empreinte():
+
     empreinte_valide = True
+    empreinte_existe = True
+
     if fichier_empreinte.exists():
+
         try:
             with fichier_empreinte.open("r", encoding="utf-8") as f_e:
                 ancienne_empreinte = json.load(f_e)
+
         except json.JSONDecodeError:
             print("ALERTE : le fichier d'empreintes est invalide.")
             ancienne_empreinte = {}
             empreinte_valide = False
+
     else:
         print("Première utilisation ! Aucun fichier d'empreintes trouvé.")
         ancienne_empreinte = {}
-    return ancienne_empreinte, empreinte_valide
+        empreinte_existe = False
+    return ancienne_empreinte, empreinte_existe, empreinte_valide
 
 def confirmer_mise_a_jour():
     print("\nVous êtes sur le point de remplacer la référence actuelle.")
@@ -125,29 +132,56 @@ def confirmer_mise_a_jour():
     return choix == "o"
 
 def main():
+
     while True:
         choix = afficher_menu()
+
         if choix == "1":
             print("\nVérification...")    
-            ancienne_empreinte, empreinte_valide = charger_empreinte()
-            if empreinte_valide:
+            ancienne_empreinte, empreinte_existe, empreinte_valide = charger_empreinte()
+
+            if not empreinte_existe:
+                empreinte = construire_empreinte(dossier, fichier_empreinte)
+                sauvegarder_empreinte(empreinte)
+                print("\nLes référence ont été créees.")
+
+            elif not empreinte_valide:
+                print("Alerte: Le fichier d'empreinte est corrompu ou invalide.")
+            else:
                 empreinte = construire_empreinte(dossier, fichier_empreinte)
                 resultats = verifier_integrite(ancienne_empreinte, empreinte)
                 afficher_rapport(resultats)
-            else:
-                print("Alerte: Le fichier d'empreinte est corrompu ou invalide.")
+
+
+
+
+
         elif choix == "2":
-            empreinte = construire_empreinte(dossier, fichier_empreinte)
-            confirmation = confirmer_mise_a_jour()
-            if confirmation:
-                mettre_a_jour_empreinte(empreinte)
-                print("Référence mise à jour avec succès.")
+
+            ancienne_empreinte, empreinte_existe, empreinte_valide = charger_empreinte()
+
+            if not empreinte_existe:
+                print("\nAucune référence existante.")
+                print("Utilisez d'abord la vérification pour initialiser le système.")
+
+            elif not empreinte_valide:
+                print("MISE À JOUR REFUSÉE : fichier d'empreinte invalide ou corrompu !")
             else:
-                print("OK ! Aucune modification.")
-# Est ce qu'on aurait pu écrire if confirmer_mise_a_jour() ? au mieu de d'abord stocker le résultat ?
+                empreinte = construire_empreinte(dossier, fichier_empreinte)
+
+                if confirmer_mise_a_jour():
+                    mettre_a_jour_empreinte(empreinte)
+                    print("Référence mise à jour avec succès.")
+
         elif choix == "3":
             print("Au-revoir.")
             break
+        else:
+            print("Choix invalide. Veuillez choisir 1, 2 ou 3.")
+
+
+
+
 
 
     if empreinte_valide:
