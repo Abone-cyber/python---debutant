@@ -117,7 +117,15 @@ def charger_empreinte():
                 if not isinstance(ancienne_empreinte, dict):
                     print("ALERTE : le fichier d'empreintes ne contient pas une structure valide.")
                     empreinte_valide = False
-                      
+
+                else:
+                    for hash_fichier in ancienne_empreinte.values():
+
+                        hash_est_valide = hash_valide(hash_fichier)
+                        if not hash_est_valide:
+                            empreinte_valide = False
+                            break
+
         except json.JSONDecodeError:
             print("ALERTE : le fichier d'empreintes est invalide.")
             empreinte_valide = False
@@ -128,6 +136,18 @@ def charger_empreinte():
         empreinte_existe = False
     return ancienne_empreinte, empreinte_existe, empreinte_valide
 
+
+
+def hash_valide(hash_fichier):
+
+    if isinstance(hash_fichier, str):
+        return len(hash_fichier) == 64 and all(
+            caracter in "0123456789abcdef" 
+            for caracter in hash_fichier)
+    return False
+
+
+
 def confirmer_mise_a_jour():
     print("\nVous êtes sur le point de remplacer la référence actuelle.")
     print("Cette action acceptera l'état actuel des fichiers comme nouvelle référence.")
@@ -136,16 +156,7 @@ def confirmer_mise_a_jour():
 
     return choix == "o"
 
-def hash_valide(hash_fichier):
-
-    if len(hash_fichier) == 64 and all(caracter in "0123456789abcde" for caracter in hash_fichier):
-        valide = True
-    else:
-        valide = False
-        
-    return valide
-
-    
+  
 
 def main():
 
@@ -156,18 +167,22 @@ def main():
             print("\nVérification...")    
             ancienne_empreinte, empreinte_existe, empreinte_valide = charger_empreinte()
 
-            if empreinte_existe:
-    
-                if empreinte_valide:
-                    empreinte = construire_empreinte(dossier, fichier_empreinte)
-                    resultats = verifier_integrite(ancienne_empreinte, empreinte)
-                    afficher_rapport(resultats)
-                else:
-                    print("Alerte: Le fichier d'empreinte est corrompu ou invalide.")
-            else:
+            if not empreinte_existe:
                 empreinte = construire_empreinte(dossier, fichier_empreinte)
                 sauvegarder_empreinte(empreinte)
-                print("\nLes référence ont été créees.")
+                print("\nLa référence ont été créee.")
+            
+            elif not empreinte_valide:
+                print("Alerte: Le fichier d'empreinte est corrompu ou invalide.")
+            
+            else:
+                empreinte = construire_empreinte(dossier, fichier_empreinte)
+                resultats = verifier_integrite(ancienne_empreinte, empreinte)
+                afficher_rapport(resultats)
+
+
+
+
 
         elif choix == "2":
 
@@ -192,7 +207,7 @@ def main():
             break
         else:
             print("Choix invalide. Veuillez choisir 1, 2 ou 3.")
-            
+
 
     if empreinte_valide:
         if not ancienne_empreinte:
