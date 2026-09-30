@@ -102,7 +102,7 @@ def afficher_menu():
     return choix
 
 def charger_empreinte():
-
+# « La référence est-elle structurellement exploitable ? »
     empreinte_valide = True
     empreinte_existe = True
     ancienne_empreinte = {}
@@ -121,8 +121,7 @@ def charger_empreinte():
                 else:
                     for hash_fichier in ancienne_empreinte.values():
 
-                        hash_est_valide = hash_valide(hash_fichier)
-                        if not hash_est_valide:
+                        if not hash_valide(hash_fichier):
                             empreinte_valide = False
                             break
 
@@ -135,7 +134,6 @@ def charger_empreinte():
         empreinte_valide = False
         empreinte_existe = False
     return ancienne_empreinte, empreinte_existe, empreinte_valide
-
 
 
 def hash_valide(hash_fichier):
@@ -155,7 +153,6 @@ def confirmer_mise_a_jour():
     choix = input("\nConfirmer ? (o/n) :").strip().lower()
 
     return choix == "o"
-
   
 
 def main():
