@@ -1,3 +1,24 @@
+"""
+empreintne_valide est pour la vérification de la lecture du fichier json
+
+ Empreinte{} contient les hash qui sont calculés pour véfirier l'intégrité des fichiers (leur état actuel)
+ ancienne_empreinte{} contient les hashs des fichiers dans leur état <<initiale>>, <<intègre>>
+
+
+
+ancienne empreinte        état actuel
+       ↓                       ↓
+    JSON                    fichiers
+
+       └──── comparaison ──────┘
+                 ↓
+      ┌──────────┼──────────┐
+      ↓          ↓          ↓
+   OK        MODIFIÉ      NOUVEAU
+                            +
+                         SUPPRIMÉ
+"""
+
 from pathlib import Path
 import hashlib
 import json
@@ -15,10 +36,10 @@ def calculer_hash(fichier):
 def verifier_integrite(ancienne_empreinte, empreinte):
 
     resultats = {"ok": [],
-                 "modifies": [],                                 
-                 "nouveaux": [],
-                 "supprimes": []
-                 }
+        "modifies": [],                                 
+        "nouveaux": [],
+        "supprimes": []
+        }
 
     for nom in ancienne_empreinte:
         if nom in empreinte:
@@ -102,7 +123,7 @@ def afficher_menu():
     return choix
 
 def charger_empreinte():
-# « La référence est-elle structurellement exploitable ? »
+# « \nest-elle structurellement exploitable ? »
 
     resultat = {
         "empreinte": {},
@@ -158,7 +179,7 @@ def confirmer_mise_a_jour():
     print("\nVous êtes sur le point de remplacer la référence actuelle.")
     print("Cette action acceptera l'état actuel des fichiers comme nouvelle référence.")
 
-    choix = input("\nConfirmer ? (o/n) :").strip().lower()
+    choix = input("\nConfirmer ? (o\n) :").strip().lower()
 
     return choix == "o"
   
@@ -175,7 +196,7 @@ def main():
             if not resultat["existe"]:
                 empreinte = construire_empreinte(dossier, fichier_empreinte)
                 sauvegarder_empreinte(empreinte)
-                print("\nLa référence ont été créee.")
+                print("\nLa référence a été créée.")
             
             elif not resultat["valide"]:
                 print("Alerte: Le fichier d'empreinte est corrompu ou invalide.")
@@ -184,7 +205,6 @@ def main():
                 empreinte = construire_empreinte(dossier, fichier_empreinte)
                 resultats = verifier_integrite(resultat["empreinte"], empreinte)
                 afficher_rapport(resultats)
-
 
 
         elif choix == "2":
